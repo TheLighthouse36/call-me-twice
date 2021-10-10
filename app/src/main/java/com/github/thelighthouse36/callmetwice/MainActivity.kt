@@ -18,25 +18,30 @@ package com.github.thelighthouse36.callmetwice
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
+import android.util.Log
 import androidx.annotation.RequiresApi
-import androidx.appcompat.app.AppCompatActivity
-import androidx.viewpager.widget.ViewPager
 import com.github.thelighthouse36.callmetwice.commons.base.BaseActivity
 import com.github.thelighthouse36.callmetwice.commons.events.MessageEvent
 import com.github.thelighthouse36.callmetwice.commons.events.PermissionDenied
 import com.github.thelighthouse36.callmetwice.commons.events.PhoneManifestPermissionsEnabled
 import com.github.thelighthouse36.callmetwice.commons.utils.CapabilitiesRequestorImpl
 import com.github.thelighthouse36.callmetwice.commons.utils.ManifestPermissionRequesterImpl
-import com.github.thelighthouse36.callmetwice.ui.main.SectionsPagerAdapter
+import com.github.thelighthouse36.callmetwice.ui.main.BubbleFragment
+import com.github.thelighthouse36.callmetwice.ui.main.UiPagerAdapter
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
-import com.google.android.material.tabs.TabLayout
 import kotlinx.android.synthetic.main.activity_main.*
+import kotlinx.android.synthetic.main.fragment_log.*
 import org.greenrobot.eventbus.EventBus
 import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import pub.devrel.easypermissions.AppSettingsDialog
 import java.lang.ref.WeakReference
+import java.util.concurrent.Executors
+import java.util.concurrent.ScheduledExecutorService
+
 
 class MainActivity : BaseActivity() {
 
@@ -44,19 +49,69 @@ class MainActivity : BaseActivity() {
 
     private val capabilitiesRequestor = CapabilitiesRequestorImpl()
 
+    val TAG = "TAGBAY"
+    var count = 0
+
+
     // flag that restarts checking capabilities dialog, after user enables manifest permissions
     // via app settings page
     private var checkCapabilitiesOnResume = false
 
+    private val exec: ScheduledExecutorService  = Executors.newSingleThreadScheduledExecutor()
+    lateinit var bubbleLoop: Runnable
+    lateinit var bubbleHandler: Handler
+
+    @RequiresApi(Build.VERSION_CODES.M)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d(TAG, "STARTING")
         setContentView(R.layout.activity_main)
+
+        val fragmentAdapter = UiPagerAdapter(supportFragmentManager)
+        viewpager_main.adapter = fragmentAdapter
+
+        tabs_main.setupWithViewPager(viewpager_main)
+
+
+        val fab: FloatingActionButton = findViewById(R.id.fab)
+
+
+        fab.setOnClickListener { view ->
+            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show()
+        }
+
+
         listenUiEvents()
         //
         manifestPermissionRequestor.activity = WeakReference(this)
         capabilitiesRequestor.activityReference = WeakReference(this)
         //
         manifestPermissionRequestor.getPermissions()
+
+        bubbleHandler = Handler(Looper.getMainLooper())
+
+
+
+        //bubble environment loop
+        bubbleLoop = Runnable {
+            bubbleEnvironment.forEach { b ->
+                if (b.life <= 0) {
+                    BubbleFragment.remove(UiPagerAdapter.fragments[1] as BubbleFragment, b)
+                } else {
+                    b.life--
+                }
+            }
+            Log.d("RUNNING", "loop be looping")
+            //strings.add((++count).toString())
+
+            BubbleFragment.notify(UiPagerAdapter.fragments[1] as BubbleFragment)
+            bubbleHandler.postDelayed(bubbleLoop, 1000)
+        }
+        bubbleHandler.postDelayed(bubbleLoop, 1000)
+//        exec.scheduleAtFixedRate(bubbleLoop, 0, 1, TimeUnit.SECONDS)
+
+
     }
 
     override fun onStart() {
@@ -115,6 +170,7 @@ class MainActivity : BaseActivity() {
             }
         })
     }
+
 
     @Subscribe(threadMode = ThreadMode.MAIN)
     fun onMessageEvent(event: MessageEvent) {

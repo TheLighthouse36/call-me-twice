@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.github.thelighthouse36.callmetwice.R
 
-class PlaceholderFragment : Fragment() {
+class PhoneLogFragment : Fragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -15,6 +15,6 @@ class PlaceholderFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
-        return inflater!!.inflate(R.layout.fragment_main, container, false)
+        return inflater!!.inflate(R.layout.fragment_log, container, false)
     }
 }

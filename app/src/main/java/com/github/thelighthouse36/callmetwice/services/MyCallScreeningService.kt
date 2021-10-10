@@ -4,7 +4,8 @@ import android.os.Build
 import android.telecom.Call
 import android.telecom.CallScreeningService
 import androidx.annotation.RequiresApi
-import com.github.thelighthouse36.callmetwice.commons.FORBIDDEN_PHONE_CALL_NUMBER
+import com.github.thelighthouse36.callmetwice.addBubble
+import com.github.thelighthouse36.callmetwice.bubbleEnvContainsNumber
 import com.github.thelighthouse36.callmetwice.commons.events.MessageEvent
 import com.github.thelighthouse36.callmetwice.commons.parseCountryCode
 import com.github.thelighthouse36.callmetwice.commons.removeTelPrefix
@@ -16,6 +17,7 @@ class MyCallScreeningService : CallScreeningService() {
 
     private val notificationManager = NotificationManagerImpl()
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     override fun onScreenCall(callDetails: Call.Details) {
         val phoneNumber = getPhoneNumber(callDetails)
         var response = CallResponse.Builder()
@@ -24,17 +26,18 @@ class MyCallScreeningService : CallScreeningService() {
         respondToCall(callDetails, response.build())
     }
 
+    @RequiresApi(Build.VERSION_CODES.Q)
     private fun handlePhoneCall(
         response: CallResponse.Builder,
         phoneNumber: String
     ): CallResponse.Builder {
-        if (phoneNumber == FORBIDDEN_PHONE_CALL_NUMBER) {
+        if (!bubbleEnvContainsNumber(phoneNumber)) {
             response.apply {
-                setRejectCall(true)
-                setDisallowCall(true)
+                setSilenceCall(true)
                 setSkipCallLog(false)
-                //
-                displayToast(String.format("Rejected call from %s", phoneNumber))
+                addBubble(phoneNumber, 10);
+                //addString(phoneNumber)
+                displayToast(String.format("Silenced call from %s", phoneNumber))
             }
         } else {
             displayToast(String.format("Incoming call from %s", phoneNumber))
