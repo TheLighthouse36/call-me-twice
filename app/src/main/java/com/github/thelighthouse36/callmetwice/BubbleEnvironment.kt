@@ -1,7 +1,9 @@
 package com.github.thelighthouse36.callmetwice
 
 
-val bubbleEnvironment: MutableList<Bubble> = mutableListOf()
+val bubbleEnvironment: ArrayList<Bubble> = arrayListOf()
+val sampleNumbers = arrayListOf("111-111-1111", "111-111-1112", "111-111-1113")
+val sampleLives = arrayListOf("5:31", "6:66", "1:23")
 //var strings = mutableListOf("Apple", "Banana", "Kumquat")
 
 fun addBubble(bubble: Bubble) {

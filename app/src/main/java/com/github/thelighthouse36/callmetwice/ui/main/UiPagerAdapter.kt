@@ -6,14 +6,18 @@ import androidx.fragment.app.FragmentPagerAdapter
 
 class UiPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
 
+    var phoneLogFragment = PhoneLogFragment()
+    var bubbleFragment = BubbleFragment()
+
+
 
     override fun getItem(position: Int): Fragment {
         return when (position) {
             0 -> {
-                fragments[0]
+                this.phoneLogFragment
             }
             1 -> {
-                fragments[1]
+                this.bubbleFragment
             }
             else -> {
                 return PlaceholderFragment()
@@ -36,7 +40,4 @@ class UiPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
         }
     }
 
-    companion object {
-        var fragments = arrayOf(PhoneLogFragment(), BubbleFragment())
-    }
 }

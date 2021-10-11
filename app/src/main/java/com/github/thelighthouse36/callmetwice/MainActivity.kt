@@ -28,7 +28,6 @@ import com.github.thelighthouse36.callmetwice.commons.events.PermissionDenied
 import com.github.thelighthouse36.callmetwice.commons.events.PhoneManifestPermissionsEnabled
 import com.github.thelighthouse36.callmetwice.commons.utils.CapabilitiesRequestorImpl
 import com.github.thelighthouse36.callmetwice.commons.utils.ManifestPermissionRequesterImpl
-import com.github.thelighthouse36.callmetwice.ui.main.BubbleFragment
 import com.github.thelighthouse36.callmetwice.ui.main.UiPagerAdapter
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.android.material.snackbar.Snackbar
@@ -39,8 +38,6 @@ import org.greenrobot.eventbus.Subscribe
 import org.greenrobot.eventbus.ThreadMode
 import pub.devrel.easypermissions.AppSettingsDialog
 import java.lang.ref.WeakReference
-import java.util.concurrent.Executors
-import java.util.concurrent.ScheduledExecutorService
 
 
 class MainActivity : BaseActivity() {
@@ -50,14 +47,12 @@ class MainActivity : BaseActivity() {
     private val capabilitiesRequestor = CapabilitiesRequestorImpl()
 
     val TAG = "TAGBAY"
-    var count = 0
 
 
     // flag that restarts checking capabilities dialog, after user enables manifest permissions
     // via app settings page
     private var checkCapabilitiesOnResume = false
 
-    private val exec: ScheduledExecutorService  = Executors.newSingleThreadScheduledExecutor()
     lateinit var bubbleLoop: Runnable
     lateinit var bubbleHandler: Handler
 
@@ -95,17 +90,27 @@ class MainActivity : BaseActivity() {
 
         //bubble environment loop
         bubbleLoop = Runnable {
-            bubbleEnvironment.forEach { b ->
+            val iterator = bubbleEnvironment.iterator()
+            while (iterator.hasNext()) {
+                val item = iterator.next()
+                if (item.life <= 0) {
+                    iterator.remove()
+                } else {
+                    item.life--
+                }
+            }
+
+           /* bubbleEnvironment.forEach { b ->
                 if (b.life <= 0) {
-                    BubbleFragment.remove(UiPagerAdapter.fragments[1] as BubbleFragment, b)
+                    fragmentAdapter.bubbleFragment.remove(b)
                 } else {
                     b.life--
                 }
-            }
-            Log.d("RUNNING", "loop be looping")
-            //strings.add((++count).toString())
+            }*/
 
-            BubbleFragment.notify(UiPagerAdapter.fragments[1] as BubbleFragment)
+            fragmentAdapter.bubbleFragment.refresh()
+
+
             bubbleHandler.postDelayed(bubbleLoop, 1000)
         }
         bubbleHandler.postDelayed(bubbleLoop, 1000)
