@@ -70,7 +70,6 @@ class MainActivity : BaseActivity() {
 
         val fab: FloatingActionButton = findViewById(R.id.fab)
 
-
         fab.setOnClickListener { view ->
             Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show()
@@ -99,14 +98,6 @@ class MainActivity : BaseActivity() {
                     item.life--
                 }
             }
-
-           /* bubbleEnvironment.forEach { b ->
-                if (b.life <= 0) {
-                    fragmentAdapter.bubbleFragment.remove(b)
-                } else {
-                    b.life--
-                }
-            }*/
 
             fragmentAdapter.bubbleFragment.refresh()
 
@@ -182,5 +173,7 @@ class MainActivity : BaseActivity() {
         val newText = String.format("%s%s\n", textLog.text.toString(), event.message)
         textLog.setText(newText)
     }
+
+
 
 }

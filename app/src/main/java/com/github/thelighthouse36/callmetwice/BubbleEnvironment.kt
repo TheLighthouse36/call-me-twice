@@ -1,10 +1,8 @@
 package com.github.thelighthouse36.callmetwice
 
 
-val bubbleEnvironment: ArrayList<Bubble> = arrayListOf()
-val sampleNumbers = arrayListOf("111-111-1111", "111-111-1112", "111-111-1113")
-val sampleLives = arrayListOf("5:31", "6:66", "1:23")
-//var strings = mutableListOf("Apple", "Banana", "Kumquat")
+var bubbleEnvironment: ArrayList<Bubble> = arrayListOf()
+
 
 fun addBubble(bubble: Bubble) {
     bubbleEnvironment.add(bubble);
@@ -23,6 +21,12 @@ fun bubbleEnvContainsNumber(number: String): Boolean {
     }
     return false
 }
+
+fun toTime(input: String): Int {
+    val values = input.split(":");
+    return Integer.parseInt(values[0]) * 60 + Integer.parseInt(values[1])
+}
+
 class Bubble(val number: String, var life: Int) {
     override fun toString(): String {
         return "Bubble(number='$number', life=$life)"

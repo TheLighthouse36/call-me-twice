@@ -8,6 +8,7 @@ class UiPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
 
     var phoneLogFragment = PhoneLogFragment()
     var bubbleFragment = BubbleFragment()
+    var settingsFragment = SettingsFragment()
 
 
 
@@ -18,6 +19,9 @@ class UiPagerAdapter(fm: FragmentManager) : FragmentPagerAdapter(fm) {
             }
             1 -> {
                 this.bubbleFragment
+            }
+            2 -> {
+                this.settingsFragment
             }
             else -> {
                 return PlaceholderFragment()

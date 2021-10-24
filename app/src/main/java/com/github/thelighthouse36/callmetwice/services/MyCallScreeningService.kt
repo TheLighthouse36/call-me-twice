@@ -17,6 +17,10 @@ class MyCallScreeningService : CallScreeningService() {
 
     private val notificationManager = NotificationManagerImpl()
 
+    companion object {
+        var time : Int = 300
+    }
+
     @RequiresApi(Build.VERSION_CODES.Q)
     override fun onScreenCall(callDetails: Call.Details) {
         val phoneNumber = getPhoneNumber(callDetails)
@@ -35,7 +39,9 @@ class MyCallScreeningService : CallScreeningService() {
             response.apply {
                 setSilenceCall(true)
                 setSkipCallLog(false)
-                addBubble(phoneNumber, 10);
+                //Implement function to get time from preferences view
+
+                addBubble(phoneNumber, time);
                 //addString(phoneNumber)
                 displayToast(String.format("Silenced call from %s", phoneNumber))
             }
@@ -53,5 +59,7 @@ class MyCallScreeningService : CallScreeningService() {
         notificationManager.showToastNotification(applicationContext, message)
         EventBus.getDefault().post(MessageEvent(message))
     }
+
+
 
 }
